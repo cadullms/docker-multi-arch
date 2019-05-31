@@ -1,0 +1,43 @@
+trigger:
+- master
+
+jobs:
+- job: Build_Linux_based_images
+  displayName: Build Linux based images
+  pool:
+    vmImage: 'ubuntu-16.04'
+  steps:
+  - template: yml-steps/build-and-push.yml
+    parameters:
+      targetStage: 'linux-arm'
+      repository: 'myapp'
+      dockerfile: 'Dockerfile.Linux'
+  - template: yml-steps/build-and-push.yml
+    parameters:
+      targetStage: 'linux-x64'
+      repository: 'myapp'
+      dockerfile: 'Dockerfile.Linux'
+
+- job: Build_Windows_based_images
+  displayName: Build Windows based images
+  pool:
+    vmImage: 'windows-2019'
+  steps:
+  - template: yml-steps/build-and-push.yml
+    parameters:
+      targetStage: 'windows-x64'
+      repository: 'myapp'
+      dockerfile: 'Dockerfile.Windows'
+
+- job: Push_Manifest_List
+  dependsOn:
+  - Build_Linux_based_images
+  - Build_Windows_based_images
+  displayName: Push Manifest List
+  pool:
+    vmImage: 'ubuntu-16.04'
+  steps:
+  - template: yml-steps/create-manifest-list.yml
+    parameters:
+      manifestName: 'myapp'
+      childImages: '$REGISTRYURL/myapp:${BUILD_BUILDID}-linux-x64 $REGISTRYURL/myapp:${BUILD_BUILDID}-linux-arm $REGISTRYURL/myapp:${BUILD_BUILDID}-windows-x64'

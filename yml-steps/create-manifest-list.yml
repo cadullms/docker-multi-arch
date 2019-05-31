@@ -1,0 +1,24 @@
+parameters:
+  manifestName: ''
+  childImages: ''
+
+steps:
+
+# note that for the manifest commands we need to enable experimental features in dockcer cli
+# see: 
+# https://medium.com/@mauridb/docker-multi-architecture-images-365a44c26be6
+# https://github.com/docker/cli/issues/947
+- script: |
+    mkdir ~/.docker
+    echo $"{\"experimental\":\"enabled\"}" > ~/.docker/config.json
+  displayName: Enable experimental features
+  
+- script: |
+    docker login -u $REGISTRY_USERNAME -p $REGISTRY_PASSWORD $REGISTRYURL
+    docker manifest create $REGISTRYURL/${{ parameters.manifestName }}:${BUILD_BUILDID} ${{ parameters.childImages }}
+    docker manifest push $REGISTRYURL/${{ parameters.manifestName }}:${BUILD_BUILDID} 
+    docker manifest create $REGISTRYURL/${{ parameters.manifestName }}:latest ${{ parameters.childImages }}
+    docker manifest push $REGISTRYURL/${{ parameters.manifestName }}:latest 
+  displayName: Create and push manifest list
+  env:
+    REGISTRY_PASSWORD: $(REGISTRY_PASSWORD)

@@ -1,0 +1,16 @@
+parameters:
+  targetStage: ''
+  repository: ''
+  dockerfile: ''
+
+steps:
+- task: 'Bash@3'
+  inputs:
+    targetType: 'inline'
+    script: |
+      docker image build -t $REGISTRYURL/${{ parameters.repository }}:${BUILD_BUILDID}-${{ parameters.targetStage }} --target ${{ parameters.targetStage }} -f ${{ parameters.dockerfile }} .
+      docker login -u $REGISTRY_USERNAME -p $REGISTRY_PASSWORD $REGISTRYURL
+      docker image push $REGISTRYURL/${{ parameters.repository }}:${BUILD_BUILDID}-${{ parameters.targetStage }} 
+  displayName: 'Build and push image ${{ parameters.repository }} for ${{ parameters.targetStage }}'
+  env:
+    REGISTRY_PASSWORD: $(REGISTRY_PASSWORD)

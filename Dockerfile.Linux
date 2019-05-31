@@ -1,0 +1,18 @@
+# Builder
+FROM microsoft/dotnet:2.1-sdk AS builder 
+
+WORKDIR /source
+COPY . .
+RUN dotnet publish -o publish
+
+# Production linux-arm
+FROM mcr.microsoft.com/dotnet/core/aspnet:2.1-stretch-slim-arm32v7 as linux-arm
+WORKDIR /app
+COPY --from=builder /source/publish .
+ENTRYPOINT [ "dotnet", "myapp.dll" ]
+
+# Production linux-x64
+FROM mcr.microsoft.com/dotnet/core/aspnet:2.1-alpine3.9 as linux-x64
+WORKDIR /app
+COPY --from=builder /source/publish .
+ENTRYPOINT [ "dotnet", "myapp.dll" ]

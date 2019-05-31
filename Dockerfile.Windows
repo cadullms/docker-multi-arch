@@ -1,0 +1,12 @@
+# Builder
+FROM microsoft/dotnet:2.1-sdk AS builder 
+WORKDIR /source
+COPY . .
+RUN dotnet publish -o publish
+
+# Production windows-x64
+FROM mcr.microsoft.com/dotnet/core/aspnet:2.1-nanoserver-1803 as windows-x64
+WORKDIR /app
+COPY --from=builder /source/publish .
+ENTRYPOINT [ "dotnet", "myapp.dll" ]
+
