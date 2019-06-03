@@ -1,38 +1,41 @@
 trigger:
-- master
+- updates/strategy-tweak
+
+#need to add in these variables
+variables:
+#  REGISTRYURL: <insert name here>.azurecr.io
+#  REGISTRY_USERNAME: ??
+#  REGISTRY_PASSWORD: ??  #use secret here!
 
 jobs:
-- job: Build_Linux_based_images
-  displayName: Build Linux based images
+- job: Build_images
+  displayName: Build images
+  strategy:
+    matrix:
+      Linux:
+        vmImage: 'ubuntu-16.04'
+        imageName: 'linux-arm'
+        dockerfile: 'Dockerfile.Linux'
+      MacOS:
+        vmImage: 'ubuntu-16.04'
+        imageName: 'linux-x64'
+        dockerfile: 'Dockerfile.Linux'
+      Windows:
+        vmImage: 'windows-latest'
+        imageName: 'windows-x64'
+        dockerfile: 'Dockerfile.Windows'
   pool:
-    vmImage: 'ubuntu-16.04'
+    vmImage: $(vmImage)
   steps:
   - template: yml-steps/build-and-push.yml
     parameters:
-      targetStage: 'linux-arm'
+      targetStage: $(imageName)
       repository: 'myapp'
-      dockerfile: 'Dockerfile.Linux'
-  - template: yml-steps/build-and-push.yml
-    parameters:
-      targetStage: 'linux-x64'
-      repository: 'myapp'
-      dockerfile: 'Dockerfile.Linux'
-
-- job: Build_Windows_based_images
-  displayName: Build Windows based images
-  pool:
-    vmImage: 'windows-2019'
-  steps:
-  - template: yml-steps/build-and-push.yml
-    parameters:
-      targetStage: 'windows-x64'
-      repository: 'myapp'
-      dockerfile: 'Dockerfile.Windows'
+      dockerfile: $(dockerfile)
 
 - job: Push_Manifest_List
   dependsOn:
-  - Build_Linux_based_images
-  - Build_Windows_based_images
+  - Build_images
   displayName: Push Manifest List
   pool:
     vmImage: 'ubuntu-16.04'
