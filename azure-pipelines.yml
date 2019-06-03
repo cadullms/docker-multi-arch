@@ -1,7 +1,7 @@
 trigger:
 - updates/strategy-tweak
 
-#need to add in these variables
+#required - add in the below variables
 variables:
 #  REGISTRYURL: <insert name here>.azurecr.io
 #  REGISTRY_USERNAME: ??
