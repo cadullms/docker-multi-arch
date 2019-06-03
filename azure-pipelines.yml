@@ -3,6 +3,7 @@ trigger:
 
 #required - add in the below variables
 variables:
+  someKey: someValue
 #  REGISTRYURL: <insert name here>.azurecr.io
 #  REGISTRY_USERNAME: ??
 #  REGISTRY_PASSWORD: ??  #use secret here!
