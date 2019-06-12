@@ -1,7 +1,7 @@
 #Note: additional parameters (REGISTRYURL, REGISTRY_USERNAME & REGISTRY_PASSWORD) should be passed in via the Azure Pipeline.
 
 trigger:
-- updates/strategy-tweak
+- master
 
 jobs:
 - job: Build_images
