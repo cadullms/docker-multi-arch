@@ -1,12 +1,7 @@
+#Note: additional parameters (REGISTRYURL, REGISTRY_USERNAME & REGISTRY_PASSWORD) should be passed in via the Azure Pipeline.
+
 trigger:
 - updates/strategy-tweak
-
-#required - add in the below variables
-variables:
-  someKey: someValue
-#  REGISTRYURL: <insert name here>.azurecr.io
-#  REGISTRY_USERNAME: ??
-#  REGISTRY_PASSWORD: ??  #use secret here!
 
 jobs:
 - job: Build_images
